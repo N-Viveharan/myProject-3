@@ -4,6 +4,7 @@ import { assets, blog_data, comments_data } from '../assets/assets'
 import Navbars from '../components/Navbars'
 import Moment from 'moment'
 import Fooder from '../components/Fooder'
+import Loader from '../components/Loader'
 
 function Blog() {
   const {id}=useParams()
@@ -100,7 +101,7 @@ function Blog() {
       <Fooder/>
 
     </div>
-  ):<div>Loading ...</div>
+  ):<Loader/>
 }
 
 export default Blog
