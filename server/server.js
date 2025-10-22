@@ -16,7 +16,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Server is running successfully ");
 });
-app.use('/api/admin',adminRouter)
+app.use("/api/admin", adminRouter);
 app.use('/api/blog',blogRouter)
 
 const PORT = process.env.PORT || 3000;

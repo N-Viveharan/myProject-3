@@ -1,33 +1,74 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { assets, blog_data, comments_data } from '../assets/assets'
+import { assets, } from '../assets/assets'
 import Navbars from '../components/Navbars'
 import Moment from 'moment'
 import Fooder from '../components/Fooder'
 import Loader from '../components/Loader'
+import { useAppContext } from '../context/AppContext'
+import toast from 'react-hot-toast'
 
 function Blog() {
   const {id}=useParams()
+
+const {axios}=useAppContext()
+
+
   const [data,setData]=useState(null)
   const [Comments,setComments]=useState([])
   const [name,setName]=useState('')
   const [content,setContent]=useState('')
 
   const fetchBlogData=async()=>{
-    const data=blog_data.find(item => item._id === id)
-    setData(data)
+  
+    try {
+     const {data}=await axios.get(`/api/blog/${id}`)
+   data.success ? setData(data.blog):toast.error(data.message)
+  } catch (error) {
+    toast.error(error.message)
   }
+  }
+ 
 
-  const fetchComments=async()=>{
-    setComments(comments_data)
-  }
+ 
+
   const addComment=async(e)=>{
     e.preventDefault()
+    try {
+      const {data}=await axios.post('/api/blog/add-comment',{blog:id,name,content})
+
+      if (data.success) {
+        toast.success(data.message)
+        setName('')
+        setContent('')
+      }
+
+      else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+       toast.error(error.message)
+    }
   }
-  useEffect(()=>{
-    fetchBlogData()
-    fetchComments()
-  ,[]})
+   const fetchComments=async()=>{
+   try {
+    const {data}=await axios.post('/api/blog/comments',{blogId:id})
+    if (data.success) {
+      setComments(data.Comments || [])
+
+    }
+    else{
+      toast.error(data.message)
+    }
+   } catch (error) {
+    toast.error(error.message)
+   }
+  }
+ useEffect(() => {
+  fetchBlogData();
+  fetchComments();
+}, []); // runs only once when component mounts
+
 
   return data ? (
     <div className='
@@ -49,7 +90,7 @@ function Blog() {
 
 
           <div className='mt-14 mb-10 max-w-3xl mx-auto'>
-            <p className='font-semibold mb-4'>Comments {Comments.length}</p>
+            <p className='font-semibold mb-4'>Comments {Comments?.length || 0}</p>
             <div className='flex flex-col gap-4'>
               {Comments.map((item,index)=>(
 
